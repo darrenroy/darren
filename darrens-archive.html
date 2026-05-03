@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Darren's Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e4e2da;
+    --border-hover: #cbc9c0;
+    --text: #1a1916;
+    --muted: #888680;
+    --faint: #b5b3ac;
+    --accent: #1a1916;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --win: #2a6e47;
+    --win-bg: #eaf4ee;
+    --loss: #a33030;
+    --loss-bg: #faeaea;
+    --note-bg: #f0efe9;
+    --note: #666460;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* LAYOUT */
+  .shell {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* HEADER */
+  header {
+    padding: 2rem 0 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .site-name {
+    font-family: var(--mono);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .site-sub {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 16px 10px 0;
+    margin-right: 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-btn.active {
+    color: var(--text);
+    font-weight: 500;
+    border-bottom-color: var(--text);
+  }
+
+  /* CONTENT */
+  .tab-content { display: none; padding: 2rem 0 3rem; }
+  .tab-content.active { display: block; }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  p.body {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    max-width: 560px;
+  }
+
+  hr.div {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.75rem 0;
+  }
+
+  /* LINK CARDS */
+  .link-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    background: var(--surface);
+    transition: border-color 0.15s, background 0.15s;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .link-card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface2);
+  }
+
+  .lc-left { display: flex; align-items: center; gap: 12px; }
+
+  .lc-icon {
+    width: 34px; height: 34px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .lc-icon svg {
+    width: 15px; height: 15px;
+    stroke: var(--muted); fill: none;
+    stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .lc-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .lc-desc { font-size: 12px; color: var(--muted); margin-top: 1px; font-weight: 300; }
+  .lc-arrow { font-size: 14px; color: var(--faint); }
+
+  /* CHAT */
+  .chat-wrap {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .chat-messages {
+    padding: 1.25rem;
+    min-height: 260px;
+    max-height: 340px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .msg { display: flex; flex-direction: column; gap: 3px; max-width: 80%; }
+  .msg.me { align-self: flex-end; align-items: flex-end; }
+  .msg.them { align-self: flex-start; align-items: flex-start; }
+
+  .msg-name { font-size: 11px; color: var(--faint); font-family: var(--mono); letter-spacing: 0.03em; }
+
+  .msg-bubble {
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 9px 13px;
+    border-radius: 12px;
+    color: var(--text);
+  }
+
+  .msg.me .msg-bubble {
+    background: var(--text);
+    color: var(--bg);
+    border-bottom-right-radius: 3px;
+  }
+
+  .msg.them .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 3px;
+  }
+
+  .chat-footer {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .chat-footer input {
+    flex: 1;
+    font-family: var(--sans);
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 12px;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .chat-footer input:focus { border-color: var(--border-hover); }
+  .chat-footer input::placeholder { color: var(--faint); }
+
+  .chat-footer button {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 7px;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .chat-footer button:hover { opacity: 0.8; }
+
+  .chat-note {
+    font-size: 11px;
+    color: var(--faint);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* JOURNAL */
+  .journal-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .j-entry {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 15px;
+    background: var(--surface);
+  }
+
+  .j-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .j-date { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+  .j-tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    letter-spacing: 0.03em;
+  }
+
+  .tag-win { background: var(--win-bg); color: var(--win); }
+  .tag-loss { background: var(--loss-bg); color: var(--loss); }
+  .tag-note { background: var(--note-bg); color: var(--note); }
+
+  .j-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .j-body { font-size: 13px; color: var(--muted); line-height: 1.55; font-weight: 300; }
+
+  .add-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px dashed var(--border-hover);
+    border-radius: 8px;
+    background: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .add-btn:hover { background: var(--surface); color: var(--text); }
+
+  .add-form {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 15px;
+    background: var(--surface);
+  }
+
+  .add-form.open { display: flex; }
+
+  .add-form input,
+  .add-form textarea,
+  .add-form select {
+    font-family: var(--sans);
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 11px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  .add-form input:focus,
+  .add-form textarea:focus,
+  .add-form select:focus { border-color: var(--border-hover); }
+
+  .add-form textarea { resize: vertical; min-height: 72px; }
+
+  .form-row { display: flex; gap: 8px; }
+  .form-row input, .form-row select { flex: 1; min-width: 0; }
+
+  .form-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 2px;
+  }
+
+  .form-actions button {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .form-actions button:hover { background: var(--surface2); color: var(--text); }
+
+  .form-actions button.primary {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  .form-actions button.primary:hover { opacity: 0.82; }
+
+  /* EDUCATION */
+  .edu-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .edu-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 15px;
+    background: var(--surface);
+    transition: background 0.15s;
+  }
+
+  .edu-top {
+    display: flex; align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .edu-title { font-size: 14px; font-weight: 500; color: var(--text); }
+
+  .edu-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .edu-desc { font-size: 13px; color: var(--muted); line-height: 1.55; font-weight: 300; }
+
+  /* INDICATOR PAGE */
+  .indicator-hero {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem;
+    background: var(--surface);
+    margin-bottom: 1.5rem;
+  }
+
+  .indicator-hero h2 {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .indicator-hero p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+    max-width: 520px;
+    margin-bottom: 1.25rem;
+  }
+
+  .indicator-hero a {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 7px;
+    background: var(--text);
+    color: var(--bg);
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+
+  .indicator-hero a:hover { opacity: 0.8; }
+
+  .rules-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rules-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+    font-weight: 300;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+  }
+
+  .rules-list li::before {
+    content: attr(data-n);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--faint);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* DISCORD PAGE */
+  .discord-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem;
+    background: var(--surface);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .discord-icon {
+    width: 52px; height: 52px;
+    background: #5865F2;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .discord-icon svg { width: 26px; height: 26px; fill: #fff; }
+
+  .discord-text h2 {
+    font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 4px;
+  }
+
+  .discord-text p {
+    font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.6;
+  }
+
+  .discord-join {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 7px;
+    background: #5865F2;
+    color: #fff;
+    text-decoration: none;
+    margin-left: auto;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+
+  .discord-join:hover { opacity: 0.88; }
+
+  @media (max-width: 580px) {
+    .tab-btn { padding: 10px 12px 10px 0; margin-right: 8px; }
+    .discord-join { margin-left: 0; margin-top: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header>
+    <div class="header-top">
+      <div>
+        <div class="site-name">Darren's Archive</div>
+        <div class="site-sub" style="margin-top:3px;">Trades, notes, and learning — for the crew.</div>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="indicator">Indicator</button>
+      <button class="tab-btn" data-tab="journal">Journal</button>
+      <button class="tab-btn" data-tab="education">Education</button>
+      <button class="tab-btn" data-tab="discord">Discord</button>
+    </nav>
+  </header>
+
+  <!-- CHAT -->
+  <div class="tab-content active" id="tab-chat">
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg them">
+          <span class="msg-name">Darren</span>
+          <div class="msg-bubble">Morning crew. SPY looking weak at open, watching 520 as support.</div>
+        </div>
+        <div class="msg them">
+          <span class="msg-name">Jake</span>
+          <div class="msg-bubble">Yeah I see it. NVDA also looks like it wants to fill yesterday's gap.</div>
+        </div>
+        <div class="msg them">
+          <span class="msg-name">Darren</span>
+          <div class="msg-bubble">Good eye. Post charts in Discord. Patience today — no FOMO entries.</div>
+        </div>
+      </div>
+      <div class="chat-footer">
+        <input type="text" id="chat-input" placeholder="Say something..." />
+        <button id="chat-send">Send</button>
+      </div>
+    </div>
+    <p class="chat-note">* Chat is local to your session. For persistent group chat, use the Discord tab.</p>
+  </div>
+
+  <!-- INDICATOR -->
+  <div class="tab-content" id="tab-indicator">
+    <div class="indicator-hero">
+      <h2>Darren Inducement V2</h2>
+      <p>A custom TradingView indicator built around inducement concepts — identifying liquidity grabs and key structural levels before price moves. Best used on 1m–15m charts for intraday setups.</p>
+      <a href="https://www.tradingview.com/script/Od17qWUq-Darren-Inducement-V2/" target="_blank" rel="noopener">View on TradingView ↗</a>
+    </div>
+
+    <div class="section-title">How to use it</div>
+    <ul class="rules-list">
+      <li data-n="01">Go to the TradingView link above and click "Add to favorite indicators" on the script page.</li>
+      <li data-n="02">Look for inducement zones forming near recent highs/lows before taking an entry.</li>
+      <li data-n="03">Confirm with structure — don't enter just because the indicator fires. Wait for price to show intent.</li>
+      <li data-n="04">Works best during NY session open (9:30–11am) and early afternoon (1–2pm EST).</li>
+      <li data-n="05">If unsure about a setup, drop the chart in Discord and let's talk it through.</li>
+    </ul>
+  </div>
+
+  <!-- JOURNAL -->
+  <div class="tab-content" id="tab-journal">
+    <div class="journal-list" id="journal-list">
+      <div class="j-entry">
+        <div class="j-meta">
+          <span class="j-date">May 1, 2026</span>
+          <span class="j-tag tag-win">win</span>
+        </div>
+        <div class="j-title">SPY long off open range</div>
+        <div class="j-body">Clean break above OR high after first 15 min. Stayed patient on entry, exited at R3. Good execution.</div>
+      </div>
+      <div class="j-entry">
+        <div class="j-meta">
+          <span class="j-date">Apr 30, 2026</span>
+          <span class="j-tag tag-loss">loss</span>
+        </div>
+        <div class="j-title">NVDA earnings fade — stopped out early</div>
+        <div class="j-body">Position too large going in. Moved stop to breakeven too fast. Need to let trades breathe.</div>
+      </div>
+      <div class="j-entry">
+        <div class="j-meta">
+          <span class="j-date">Apr 29, 2026</span>
+          <span class="j-tag tag-note">note</span>
+        </div>
+        <div class="j-title">Rule reminder: no trades in first 5 min</div>
+        <div class="j-body">Broke this twice this week. The open is noise, not signal. Log it, don't trade it.</div>
+      </div>
+    </div>
+
+    <button class="add-btn" id="add-btn">+ Add entry</button>
+
+    <div class="add-form" id="add-form">
+      <div class="form-row">
+        <input type="text" id="f-title" placeholder="Title (e.g. SPY long off OR)" />
+        <select id="f-tag">
+          <option value="note">Note</option>
+          <option value="win">Win</option>
+          <option value="loss">Loss</option>
+        </select>
+      </div>
+      <textarea id="f-body" placeholder="What happened? What did you learn?"></textarea>
+      <div class="form-actions">
+        <button id="cancel-btn">Cancel</button>
+        <button class="primary" id="save-btn">Save entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="tab-content" id="tab-education">
+    <p class="body" style="margin-bottom:1.5rem;">Concepts worth knowing. Add your own notes or links as you go.</p>
+    <div class="edu-list">
+      <div class="edu-item">
+        <div class="edu-top">
+          <div class="edu-title">Inducement & liquidity grabs</div>
+          <span class="edu-tag">Concept</span>
+        </div>
+        <div class="edu-desc">Price sweeps a recent high or low to grab liquidity before reversing. The indicator is designed to flag these moments. Don't chase — wait for confirmation after the sweep.</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-top">
+          <div class="edu-title">Open range trading</div>
+          <span class="edu-tag">Setup</span>
+        </div>
+        <div class="edu-desc">The first 15–30 min of RTH sets the day's initial range. Breaks above OR high or below OR low with follow-through are among the cleanest intraday setups.</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-top">
+          <div class="edu-title">Risk-to-reward discipline</div>
+          <span class="edu-tag">Fundamentals</span>
+        </div>
+        <div class="edu-desc">At a minimum 2:1 R:R, you can be wrong 40% of the time and still be profitable. Sizing and stop placement matter more than finding perfect entries.</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-top">
+          <div class="edu-title">Reading market structure</div>
+          <span class="edu-tag">Concept</span>
+        </div>
+        <div class="edu-desc">Higher highs and higher lows = uptrend. Lower highs and lower lows = downtrend. Identify the structure on a higher timeframe before dropping down to find entries.</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-top">
+          <div class="edu-title">Trading psychology</div>
+          <span class="edu-tag">Mindset</span>
+        </div>
+        <div class="edu-desc">FOMO and revenge trading are the two biggest account killers. Your journal is your best tool — log everything, especially the bad trades, and look for patterns in your behavior.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCORD -->
+  <div class="tab-content" id="tab-discord">
+    <div class="discord-card">
+      <div class="discord-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+        </svg>
+      </div>
+      <div class="discord-text">
+        <h2>Join the Discord</h2>
+        <p>Live trade calls, morning watchlists, chart sharing, and general crew chat. This is the main hub for real-time stuff.</p>
+      </div>
+      <a class="discord-join" href="https://discord.gg/XC762jbUjQ" target="_blank" rel="noopener">Join server ↗</a>
+    </div>
+
+    <div class="section-title">What we use it for</div>
+    <ul class="rules-list">
+      <li data-n="—">Morning briefings before the open — key levels and what to watch.</li>
+      <li data-n="—">Live chart sharing during market hours. Drop your setups for feedback.</li>
+      <li data-n="—">Post-market reviews. What worked, what didn't, lessons for next session.</li>
+      <li data-n="—">General chat — questions, education, or just checking in with the crew.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  const chatInput = document.getElementById('chat-input');
+  const chatMessages = document.getElementById('chat-messages');
+
+  function sendChat() {
+    const val = chatInput.value.trim();
+    if (!val) return;
+    const msg = document.createElement('div');
+    msg.className = 'msg me';
+    msg.innerHTML = '<span class="msg-name">You</span><div class="msg-bubble">' + val.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])) + '</div>';
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    chatInput.value = '';
+  }
+
+  document.getElementById('chat-send').addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
+
+  const addBtn = document.getElementById('add-btn');
+  const addForm = document.getElementById('add-form');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const saveBtn = document.getElementById('save-btn');
+  const journalList = document.getElementById('journal-list');
+
+  addBtn.addEventListener('click', () => { addForm.classList.add('open'); addBtn.style.display = 'none'; });
+  cancelBtn.addEventListener('click', () => { addForm.classList.remove('open'); addBtn.style.display = ''; });
+
+  saveBtn.addEventListener('click', () => {
+    const title = document.getElementById('f-title').value.trim();
+    const body = document.getElementById('f-body').value.trim();
+    const tag = document.getElementById('f-tag').value;
+    if (!title) return;
+    const now = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+    const tagMap = { win: 'tag-win', loss: 'tag-loss', note: 'tag-note' };
+    const esc = s => s.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    const el = document.createElement('div');
+    el.className = 'j-entry';
+    el.innerHTML = `<div class="j-meta"><span class="j-date">${now}</span><span class="j-tag ${tagMap[tag]}">${tag}</span></div><div class="j-title">${esc(title)}</div>${body ? `<div class="j-body">${esc(body)}</div>` : ''}`;
+    journalList.prepend(el);
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-body').value = '';
+    addForm.classList.remove('open');
+    addBtn.style.display = '';
+  });
+</script>
+</body>
+</html>
